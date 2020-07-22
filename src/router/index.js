@@ -6,6 +6,14 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/login',
+      component: () => import('../components/Login.vue'),
+    },
+    {
+      path: '/register',
+      component: () => import('../components/Register.vue'),
+    },
+    {
       path: '/',
       component: () => import('../components/pages/Index'),
       children: [
@@ -38,6 +46,10 @@ export default new Router({
           component: () => import('../components/pages/Detailed'),
         },
         {
+          path: 'confirm',
+          component: () => import('../components/pages/Confirm.vue'),
+        },
+        {
           path: 'detailed/:id',
           component: () => import('../components/pages/Detailed'),
         },
@@ -45,8 +57,9 @@ export default new Router({
           path: '',
           redirect: 'home'
         }
-      ]
+      ],
     },
+    
 
   ]
 })

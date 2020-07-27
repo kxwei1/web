@@ -14,12 +14,6 @@
     <mt-navbar v-model="selected">
       <mt-tab-item :id="index" v-for="(item,index) of navname" :key="index">{{item.catename}}</mt-tab-item>
     </mt-navbar>
-    <!-- tab-container -->
-    <!-- <mt-tab-container v-model="selected">
-      <mt-tab-container-item :id="index" v-for="(item,index) of navname" :key="index" >
-        <mt-cell :title="item " />
-      </mt-tab-container-item>
-    </mt-tab-container>-->
     <div class="topbanner">
       <mt-swipe :auto="4000" :speed="500">
         <mt-swipe-item v-for="(bannerurl,index) of bannerimgurl" :key="index">
@@ -27,12 +21,15 @@
         </mt-swipe-item>
       </mt-swipe>
     </div>
-    <div class="subNav">
-      <a href="#" v-for="(nav,index) of navimgurl" :key="index" @click="switchTab(nav.path)">
-        <img :src="nav.src" />
-        <i>{{nav.title}}</i>
-      </a>
-    </div>
+    <van-grid class="subNav">
+      <van-grid-item
+        v-for="(nav,index) of navimgurl"
+        :key="index"
+        :icon="nav.src"
+        :text="nav.title"
+        :to="nav.path"
+      />
+    </van-grid>
     <div class="subMenu">
       <div class="fl">
         <header>
@@ -93,64 +90,19 @@
         <img src="/static/img/bar.jpg" alt="banner" />
       </a>
     </div>
-    <div class="main">
-      <div class="guild">
-        <ul>
-          <li v-for="(item,index) of guild" :key="index">
-            <a href=":javaScript">{{item}}</a>
-          </li>
-        </ul>
-      </div>
-      <footer>
-        <ul>
-          <li>
-            <img src="/static/img/shop_4.jpg" alt="shop_4" />
-            <div class="txt">
-              <p>
-                <a href="#">雅诗兰熏染发膏60ml</a>
-              </p>
-              <p>
-                <span>￥123.00</span>
-              </p>
-              <p>已售800件</p>
-              <a href="detailed.html">
-                <span>立即抢购</span>
-              </a>
-            </div>
-          </li>
-          <li>
-            <img src="/static/img/shop_4.jpg" alt="shop_4" />
-            <div class="txt">
-              <p>
-                <a href="#">雅诗兰熏染发膏60ml</a>
-              </p>
-              <p>
-                <span>￥123.00</span>
-              </p>
-              <p>已售800件</p>
-              <a href="detailed.html">
-                <span>立即抢购</span>
-              </a>
-            </div>
-          </li>
-          <li>
-            <img src="/static/img/shop_4.jpg" alt="shop_4" />
-            <div class="txt">
-              <p>
-                <a href="#">雅诗兰熏染发膏60ml</a>
-              </p>
-              <p>
-                <span>￥123.00</span>
-              </p>
-              <p>已售800件</p>
-              <a href="detailed.html">
-                <span>立即抢购</span>
-              </a>
-            </div>
-          </li>
-        </ul>
-      </footer>
-    </div>
+    <van-tabs type="card">
+      <van-tab 
+      v-for="(item,index) of goods" :key='index' :title="item.content[5].title">
+        <van-card
+          v-for="card in item.content.slice(0,5)"
+          :key="card.id"
+          :price="card.price"
+          desc="立即抢购"
+          :title="card.goodsname"
+          :thumb="card.img"
+        />
+      </van-tab>
+    </van-tabs>
   </div>
 </template>
 
@@ -161,41 +113,55 @@ export default {
   props: {},
   data() {
     return {
+      tabs: [
+        { title: "热门推荐" },
+        { title: "发现好货" },
+        { title: "只看专场" },
+        { title: "只看商品" },
+      ],
       selected: "/home",
       guild: [],
+      goods: [],
       bannerimgurl: [],
       navimgurl: [
         {
           src: "/static/img/icon_1.jpg",
           title: "显示抢购",
-          path: "/cart"
+          path: "/cart",
         },
         {
           src: "/static/img/icon_2.jpg",
           title: "积分商城",
-          path: "/cart"
+          path: "/cart",
         },
         {
           src: "/static/img/icon_3.jpg",
           title: "联系我们",
-          path: "/cart"
+          path: "/cart",
         },
         {
           src: "/static/img/icon_4.jpg",
           title: "商品分类",
-          path: "/sort"
-        }
+          path: "/sort",
+        },
       ],
       value: "",
       navname: [],
-      selected: ""
+      selected: "",
     };
   },
   mounted() {
-    this.$axios.get("/api/getcate").then(res => {
+    this.$axios.get("/api/getindexgoods").then((res) => {
+      this.goods = res.data.list;
+      for(let i=0;i<3;i++){
+        this.goods[i].content.push(this.tabs[i])
+      }
+      console.log(this.goods);
+    });
+    this.$axios.get("/api/getcate").then((res) => {
       this.navname = res.data.list;
     });
-    this.$axios.get("/api/getbanner").then(res => {
+    this.$axios.get("/api/getbanner").then((res) => {
       this.bannerimgurl = res.data.list;
     });
   },
@@ -205,17 +171,32 @@ export default {
     },
     getcate() {
       return this.$axios.get("/api/getcate");
-    }
+    },
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {},
 };
 </script>
 
 <style scoped>
+.van-tabs__wrap {
+  margin-bottom: 0.2rem;
+}
+.van-tabs {
+  margin-bottom: 1rem;
+}
+.van-card__desc {
+  display: block;
+  width: 1.64rem;
+  text-align: center;
+  font: 0.23rem/0.4rem "\5FAE\8F6F\96C5\9ED1";
+  color: #fffdff;
+  background: #f26c17;
+  border-radius: 0.04rem;
+}
 .banner img {
-  margin-top: 0.2rem;
+  margin: 0.2rem 0;
   width: 100%;
 }
 .logo {
@@ -246,27 +227,6 @@ export default {
 .mint-swipe-item img {
   width: 6.37rem;
   height: 3.2rem;
-}
-.subNav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
-  padding: 0.31rem 0.49rem 0.1rem 0.38rem;
-  border-bottom: 0.01rem solid #ebebeb;
-}
-.subNav a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.subNav a img {
-  width: 0.64rem;
-  height: 0.62rem;
-}
-.subNav a i {
-  font: 0.24rem/0.79rem "微软雅黑";
-  color: #636363;
 }
 .subMenu {
   margin: 0.3rem 0;

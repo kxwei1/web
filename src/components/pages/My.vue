@@ -13,7 +13,12 @@
       <div class="login">
         <header>
           <div class="left clearfix">
-            <img src="../../../static/img/mine.png" alt="mine" />
+            <van-image
+              round
+              width="1.5rem"
+              height="1.5rem"
+              src="https://img.yzcdn.cn/vant/cat.jpeg"
+            />
             <p>
               优溯
               <br />
@@ -24,24 +29,11 @@
             <a href="#">每日签到</a>
           </div>
         </header>
-        <footer>
-          <a href="#">
-            <img src="../../../static/img/iconMine_1.jpg" alt="but_06" />
-            <i>全部订单</i>
-          </a>
-          <a href="#">
-            <img src="../../../static/img/iconMine_2.jpg" alt="iconMine_2" />
-            <i>待付款</i>
-          </a>
-          <a href="#">
-            <img src="../../../static/img/iconMine_3.jpg" alt="iconMine_3" />
-            <i>代收款</i>
-          </a>
-        </footer>
+          <van-grid icon-size='0.55rem'>
+            <van-grid-item v-for="(item,index) of grids" :key='index' :icon="item.img" :text="item.title"  />
+          </van-grid>
       </div>
-
       <!-- main -->
-
       <div class="main">
         <ul>
           <li>
@@ -98,16 +90,38 @@ export default {
   components: {},
   props: {},
   data() {
-    return {};
+    return {
+      grids:[
+        {
+          img:'../../../static/img/iconMine_1.jpg',
+          title:'全部订单'
+        },
+        {
+          img:'../../../static/img/iconMine_2.jpg',
+          title:'待付款'
+        },
+        {
+          img:'../../../static/img/iconMine_3.jpg',
+          title:'代收款'
+        },
+      ]
+    };
   },
   methods: {},
   filter: {},
   computed: {},
-  watch: {}
+  watch: {},
 };
 </script>
 
 <style scoped>
+.van-grid-item{
+  margin:0 15px;
+  /* padding-right:20px; */
+}
+.van-grid{
+  width: 100%;
+}
 .mint-header {
   background-color: #f26b11;
 }
@@ -115,33 +129,6 @@ html,
 body {
   height: 100%;
   background: #f1f1f1;
-}
-.header {
-  display: flex;
-  justify-content: space-between;
-  background: #f26b11;
-}
-.header em {
-  font: 0.36rem "微软雅黑";
-  color: #ffffff;
-  padding-top: 0.1rem;
-}
-.header a {
-  padding-top: 0.2rem;
-  font: 0.3rem "微软雅黑";
-  color: #ffffff;
-}
-.header .menu {
-  display: flex;
-  justify-content: space-between;
-  width: 0.55rem;
-  padding-bottom: 0.36rem;
-}
-.header .menu span {
-  width: 0.12rem;
-  height: 0.11rem;
-  background: #ffffff;
-  border-radius: 50%;
 }
 .login {
   margin-bottom: 0.21rem;
@@ -155,10 +142,7 @@ body {
 .login header .left {
   display: flex;
 }
-.login header .left img {
-  width: 1.32rem;
-  height: 1.42rem;
-  padding-right: 0.1rem;
+.van-image {
   background: #822e02;
   border: 0.05rem solid #ffffff;
   border-radius: 50%;

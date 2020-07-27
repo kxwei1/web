@@ -1,8 +1,8 @@
 <template>
-  <van-tabbar v-model="active" active-color="#f26b11" inactive-color="#000">
-    <van-tabbar-item @click.native="switchTab('/home')" icon="shop-o">主页</van-tabbar-item>
-    <van-tabbar-item @click.native="switchTab('/cart')" icon="cart-o">购物车</van-tabbar-item>
-    <van-tabbar-item @click.native="switchTab('/my')" icon="friends-o">我的</van-tabbar-item>
+  <van-tabbar v-model="active" active-color="#f26b11" inactive-color="#000" router>
+    <van-tabbar-item replace to="/home" icon="shop-o">主页</van-tabbar-item>
+    <van-tabbar-item replace to="/cart" icon="cart-o">购物车</van-tabbar-item>
+    <van-tabbar-item replace to="/my" icon="friends-o">我的</van-tabbar-item>
   </van-tabbar>
 </template>
 
@@ -15,7 +15,7 @@ export default {
     return {
       selected: "/home",
       active: "https://img.yzcdn.cn/vant/user-active.png",
-      inactive: "https://img.yzcdn.cn/vant/user-inactive.png"
+      inactive: "https://img.yzcdn.cn/vant/user-inactive.png",
     };
   },
   mounted() {},
@@ -25,15 +25,15 @@ export default {
         return;
       }
       this.$router.push(name);
-    }
+    },
   },
   filter: {},
   computed: {},
   watch: {
     $route() {
       this.selected = this.$route.path;
-    }
-  }
+    },
+  },
 };
 </script>
 

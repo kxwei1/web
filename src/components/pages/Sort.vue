@@ -11,27 +11,27 @@
       <!-- mian -->
       <div class="main">
         <div class="nav">
-          <ul>
-            <li
+          <van-sidebar v-model="activeKey">
+            <van-sidebar-item
               v-for="item of firstList"
               :key="item.id"
               @click="cateChange(item.id)"
-            >{{item.catename}}</li>
-          </ul>
+              :title="item.catename"
+            />
+          </van-sidebar>
         </div>
         <div class="list">
-          <div class="items" >
+          <div class="items">
             <footer>
-              <ul>
-                <li  v-for="item of secondCates" :key="item.id">
-                  <a @click="switchTab(item.id)">
-                    <img :src="item.img" />
-                  <p>
-                   {{item.catename}}
-                  </p>
-                  </a>
-                </li>
-              </ul>
+              <van-grid :column-num="3" icon-size="1.16rem">
+                <van-grid-item
+                  v-for="item in secondCates"
+                  :key="item.id"
+                  :icon="item.img"
+                  :text="item.catename"
+                  @click="switchTab(item.id)"
+                />
+              </van-grid>
             </footer>
           </div>
         </div>
@@ -48,42 +48,46 @@ export default {
     return {
       firstList: [],
       secondCates: [],
-      thirdCates:[]
+      thirdCates: [],
+      activeKey: 0,
     };
   },
   mounted() {
-    this.$http.get(this.$apis.cateslist, { pid: 17 }).then(res => {
+    this.$http.get(this.$apis.cateslist, { pid: 17 }).then((res) => {
       this.secondCates = res.list;
       console.log(res);
     });
-    this.$http.get(this.$apis.cateslist, { pid: 18 }).then(res => {
+    this.$http.get(this.$apis.cateslist, { pid: 18 }).then((res) => {
       this.thirdCates = res.list;
     });
-    this.$axios.get("/api/catelist").then(res => {
+    this.$axios.get("/api/catelist").then((res) => {
       this.firstList = res.data.list;
     });
   },
   methods: {
     switchTab(pid) {
-      this.$router.push('/list/'+pid);
+      this.$router.push("/list/" + pid);
     },
     cateChange(e) {
       if (e == "") {
         return false;
       } else {
-        this.$http.get(this.$apis.cateslist, { pid: e }).then(res => {
+        this.$http.get(this.$apis.cateslist, { pid: e }).then((res) => {
           this.secondCates = res.list;
           console.log(res);
         });
       }
-    }
+    },
   },
   computed: {},
-  watch: {}
+  watch: {},
 };
 </script>
 
 <style scoped>
+.van-sidebar {
+  width: 100%;
+}
 html,
 body {
   height: 100%;

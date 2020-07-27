@@ -41,9 +41,15 @@ let menuadd = '/api/menuadd',
     banneredit = '/api/banneredit',
     bannerdelete = '/api/menulibannerdeletest',
     getcategoods = '/api/getcategoods',
+    getseckill = '/api/getseckill',
+    getcatetree = '/api/getcatetree',
+    getindexgoods = '/api/getindexgoods',
     getgoodsinfo = '/api/getgoodsinfo'
     
 export default {
+    getcatetree,
+    getseckill,
+    getindexgoods,
     getgoodsinfo,
     getcategoods,
     menuadd,

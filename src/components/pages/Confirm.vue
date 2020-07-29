@@ -20,38 +20,14 @@
         <div class="items">
           <ul>
             <li>
-              <van-swipe-cell>
-                <van-card
-                  default
-                  num="规格"
-                  price="2.00"
-                  desc="描述信息"
-                  title="商品标题"
-                  class="goods-card"
-                  thumb="https://img.yzcdn.cn/vant/cat.jpeg"
-                />
-              </van-swipe-cell>
-              <!-- <div>
-                <img src="../../../static/img/shop_4.jpg" alt="shop_4" />
-                <p>
-                  雅诗兰熏护肤霜
-                  <br />
-                  <em>规格：50g</em>
-                </p>
-              </div>-->
-              <!-- <span>￥120.00</span> -->
-            </li>
-            <li>
-              <div>
-                <p>购买数量：</p>
-              </div>
-              <div class="right">
-                <div>
-                  <a href="#">-</a>
-                  <a href="#">1</a>
-                  <a href="#">+</a>
-                </div>
-              </div>
+              <van-card
+                v-for="item of info"
+                :key="item.id"
+                :num="item.num"
+                :price="item.price"
+                :title="item.goodsname"
+                :thumb="item.img"
+              />
             </li>
             <li>
               <div>
@@ -86,7 +62,7 @@
           <ul>
             <li>
               <span>商品金额</span>
-              <em>￥68.00</em>
+              <em>￥{{sum}}.00</em>
             </li>
             <li>
               <span>运费</span>
@@ -108,10 +84,10 @@
           <div>
             <p>
               实付金额：
-              <span>￥68.00</span>
+              <span>￥{{sum}}.00</span>
             </p>
             <p>
-              <a href="#">提交订单</a>
+              <a href="#">立即付款</a>
             </p>
           </div>
         </footer>
@@ -126,6 +102,10 @@ export default {
   props: {},
   data() {
     return {
+      num: 2,
+      checked: true,
+      allchecked: false,
+      info: [],
       chosenAddressId: "1",
       list: [
         {
@@ -133,35 +113,59 @@ export default {
           name: "张三",
           tel: "13000000000",
           address: "北京市海淀区隐泉路青林苑6号楼中公优就业总部3层",
-          isDefault: true
-        }
-      ]
+          isDefault: true,
+        },
+      ],
     };
   },
-  mounted() {},
+  mounted() {
+    this.getcart();
+  },
   methods: {
+    getcart() {
+      this.$http
+        .get(this.$apis.cartlist, { uid: this.$store.state.adminUser.uid })
+        .then((res) => {
+          this.info = res.list;
+          this.info.map((item) => {
+            item.status = item.status == 1 ? true : false;
+          });
+          console.log(this.info);
+        });
+    },
     onAdd() {
       Toast("新增地址");
     },
     onEdit(item, index) {
       Toast("编辑地址:" + index);
-    }
+    },
   },
-  computed: {},
-  watch: {}
+  computed: {
+    sum: function () {
+      let sum = 0;
+      this.info.map((item) => {
+        if (item.status == true) {
+          sum += item.price * item.num;
+        }
+      });
+      console.log(sum);
+      return sum;
+    },
+  },
+  watch: {},
 };
 </script>
 
 <style scoped>
- .goods-card {
-    margin: 0;
-    background-color: white;
-  }
+.goods-card {
+  margin: 0;
+  background-color: white;
+}
 .delete-button {
-    height: 100%;
-  }
-.van-card__content{
-    width: 3.5rem;
+  height: 100%;
+}
+.van-card__content {
+  width: 3.5rem;
 }
 .mint-header {
   background-color: #f26b11;
@@ -178,6 +182,7 @@ export default {
 }
 .content .items ul li {
   display: flex;
+  flex-flow: column;
   justify-content: space-between;
   padding: 0.27rem 0.31rem 0.3rem 0.27rem;
 }
@@ -310,7 +315,7 @@ export default {
   text-align: center;
   background: #f26b11;
   display: block;
-  font: 0.3rem/1.25rem "微软雅黑";
+  font: 0.3rem/0.8rem "微软雅黑";
   color: #ffffff;
   border-radius: 0.06rem;
 }

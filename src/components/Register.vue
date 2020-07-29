@@ -10,7 +10,7 @@
     />
     <van-form class="box" @submit="onSubmit">
       <van-field
-        v-model="info.username"
+        v-model="info.phone"
         name="手机号"
         label="手机号"
         placeholder="手机号"
@@ -34,6 +34,9 @@
       <div style="margin: 16px;">
         <van-button round block type="info" native-type="submit">注册</van-button>
       </div>
+      <div class="info">
+        <van-button to="/login" plain type="info">已有账号?去登陆</van-button>
+      </div>
     </van-form>
   </div>
 </template>
@@ -46,7 +49,7 @@ export default {
   data() {
     return {
       info: {
-        username: "",
+        phone: "",
         password: "",
         nickname: "",
       },
@@ -54,6 +57,9 @@ export default {
   },
   mounted() {},
   methods: {
+    switchTab(i) {
+      this.$router.push(i);
+    },
     onClickLeft() {
       Toast("返回");
     },
@@ -61,31 +67,15 @@ export default {
       this.$router.push("/login");
       Toast("登陆");
     },
-    onSubmit(values) {
-      this.$refs[values].validate((valid) => {
-        if (valid) {
-          let data = JSON.parse(JSON.stringify(this.info));
-          data.status = data.status ? 1 : 2;
-          let arr = [];
-          this.specaAttrs.map((item) => {
-            arr.push(item.value);
-          });
-          data.attrs = arr ? arr.join(",") : "";
-          let url = this.$apis.specsadd;
-          if (this.$route.params.specsid) {
-            (url = this.$apis.specsedit),
-              (data.id = this.$route.params.specsid);
-          }
-          this.$http.post(url, data).then((res) => {
-            if (res.code == 200) {
-              this.$router.push("/specs");
-            } else {
-              alert(1);
-            }
-          });
+    onSubmit() {
+      this.$http.post(this.$apis.register, this.info).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          this.$router.push("/login");
+        } else {
+          alert("注册失败");
         }
       });
-      this.$router.push("/home");
     },
   },
   computed: {},
@@ -96,5 +86,9 @@ export default {
 <style scoped>
 .box {
   margin-top: 4rem;
+}
+.info {
+  width: 100%;
+  text-align: center;
 }
 </style>

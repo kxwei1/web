@@ -18,7 +18,7 @@
       <!-- main -->
       <div class="main">
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <van-cell v-for="item of goodsList" :key="item.id">
+          <van-cell v-for="item of goodsList" :key="item.id" :to="'/detailed/'+item.id">
             <div class="list">
               <div class="left">
                 <a href="#">
@@ -55,7 +55,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route.params.id);
     this.$http
       .get(this.$apis.getcategoods, { fid: this.$route.params.id })
       .then((res) => {

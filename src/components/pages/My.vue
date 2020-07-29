@@ -20,18 +20,24 @@
               src="https://img.yzcdn.cn/vant/cat.jpeg"
             />
             <p>
-              优溯
+              {{userInfo.nickname}}
               <br />
               <span>V1</span>
             </p>
           </div>
           <div class="right">
-            <a href="#">每日签到</a>
+            <van-button v-if="this.$store.state.adminUser.nickname" @click="quit" type="info">退出登录</van-button>
+            <van-button v-else to="/login" type="info">未登录</van-button>
           </div>
         </header>
-          <van-grid icon-size='0.55rem'>
-            <van-grid-item v-for="(item,index) of grids" :key='index' :icon="item.img" :text="item.title"  />
-          </van-grid>
+        <van-grid icon-size="0.55rem">
+          <van-grid-item
+            v-for="(item,index) of grids"
+            :key="index"
+            :icon="item.img"
+            :text="item.title"
+          />
+        </van-grid>
       </div>
       <!-- main -->
       <div class="main">
@@ -85,41 +91,60 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "",
   components: {},
   props: {},
   data() {
     return {
-      grids:[
+      grids: [
         {
-          img:'../../../static/img/iconMine_1.jpg',
-          title:'全部订单'
+          img: "../../../static/img/iconMine_1.jpg",
+          title: "全部订单",
         },
         {
-          img:'../../../static/img/iconMine_2.jpg',
-          title:'待付款'
+          img: "../../../static/img/iconMine_2.jpg",
+          title: "待付款",
         },
         {
-          img:'../../../static/img/iconMine_3.jpg',
-          title:'代收款'
+          img: "../../../static/img/iconMine_3.jpg",
+          title: "代收款",
         },
-      ]
+      ],
+      userInfo: {},
     };
   },
-  methods: {},
+  mounted() {
+    this.userInfo = sessionStorage.getItem("userInfo")
+      ? JSON.parse(sessionStorage.getItem("userInfo"))
+      : {};
+    console.log(this.userInfo);
+  },
+  methods: {
+    ...mapActions(["setAdminUserSync"]),
+
+    quit() {
+      this.setAdminUserSync({});
+      this.$router.push("/login");
+      this.userInfo = {};
+    },
+  },
   filter: {},
-  computed: {},
+  computed: {
+    ...mapGetters(["userInfo"]),
+  },
   watch: {},
 };
 </script>
 
 <style scoped>
-.van-grid-item{
-  margin:0 15px;
+.van-grid-item {
+  margin: 0 15px;
   /* padding-right:20px; */
 }
-.van-grid{
+.van-grid {
   width: 100%;
 }
 .mint-header {

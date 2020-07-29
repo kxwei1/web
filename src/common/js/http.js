@@ -7,6 +7,9 @@ function get(url, params = {}) {
             params,
             headers: {
                 'Authorization': store.state.adminUser.token
+                // 'Authorization' : sessionStorage.getItem("userInfo")
+                //     ? JSON.parse(sessionStorage.getItem("userInfo"))
+                //     : {}
             }
         }).then(response => {
             resolve(response.data)
@@ -20,9 +23,12 @@ function post(url, data = {}) {
         axios({
             url,
             data,
-            method:'POST',
+            method: 'POST',
             headers: {
                 'Authorization': store.state.adminUser.token
+                // 'Authorization': sessionStorage.getItem("userInfo")
+                // ? JSON.parse(sessionStorage.getItem("userInfo"))
+                // : {}
             }
         }).then(response => {
             resolve(response.data)
@@ -32,6 +38,6 @@ function post(url, data = {}) {
     })
 }
 
-export default{
-    get,post
+export default {
+    get, post
 }

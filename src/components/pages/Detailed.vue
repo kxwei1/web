@@ -11,11 +11,11 @@
     <div class="content">
       <!-- mian -->
       <div class="main">
-        <img :src="goods[0].img" alt="picDetail_2" />
-        <p>{{goods[0].goodsname}}</p>
+        <img :src="goods.img" alt="picDetail_2" />
+        <p>{{goods.goodsname}}</p>
         <p>
-          <em>￥{{goods[0].price}}</em>
-          <span>（此价格不与套装优惠同时享受）</span>
+          <em>￥{{goods.price}}</em>
+          <span>（此价格不与套装优惠同时享受）{{this.$store.state.adminUser.uid}}</span>
         </p>
       </div>
 
@@ -23,28 +23,39 @@
       <div class="list">
         <ul>
           <li>
-            <p>
-              促销：
-              <i>满减</i>满2件9折；3件8折
-            </p>
-            <span class="iconfont">&#xe61f;</span>
+            <!-- 优惠券单元格 -->
+            <van-coupon-cell
+              :coupons="coupons"
+              :chosen-coupon="chosenCoupon"
+              @click="showList = true"
+            />
+            <!-- 优惠券列表 -->
+            <van-popup
+              v-model="showList"
+              round
+              position="bottom"
+              style="height: 70%; padding-top: 4px;"
+            >
+              <van-coupon-list
+                :coupons="coupons"
+                :chosen-coupon="chosenCoupon"
+                @change="onChange"
+                @exchange="onExchange"
+              />
+            </van-popup>
           </li>
           <li>
-            <p>购买数量</p>
-            <div class="right">
-              <a href="#">-</a>
-              <a href="#">1</a>
-              <a href="#">+</a>
-            </div>
+            <b class="font">购买数量:</b>
+            <van-stepper v-model="num" integer />
           </li>
           <li>
             <p>商品属性</p>
             <span class="iconfont">&#xe61f;</span>
           </li>
           <li>
-            <em>{{goods[0].specsname}}</em>
+            <em>{{goods.specsname}}</em>
             <a href="#">
-              <span>{{goods[0].specsattr}}</span>
+              <span>{{goods.specsattr}}</span>
             </a>
             <a href="#">
               <span>5g</span>
@@ -96,30 +107,80 @@
         </ul>
       </div>
     </div>
+    <div>
+      <van-goods-action>
+        <van-goods-action-icon icon="chat-o" text="客服" color="#07c160" />
+        <van-goods-action-icon icon="cart-o" text="购物车" />
+        <van-goods-action-icon icon="star" text="已收藏" color="#ff5000" />
+        <van-goods-action-button @click="add()" type="warning" text="加入购物车" />
+        <van-goods-action-button type="danger" text="立即购买" />
+      </van-goods-action>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import { adminUser } from "vuex";
+const coupon = {
+  available: 1,
+  condition: "100",
+  reason: "",
+  value: 150,
+  name: "满2件9折；3件8折",
+  startAt: 1489104000,
+  endAt: 1514592000,
+  valueDesc: "15",
+  unitDesc: "元",
+};
 export default {
   components: {},
   props: {},
   data() {
     return {
-      goods: []
+      goods: [],
+      chosenCoupon: -1,
+      coupons: [coupon],
+      showList: false,
+      num: 1,
+      info: {
+        num: 1,
+        uid: "",
+        goodsid: "",
+      },
     };
   },
   mounted() {
-    console.log(this.$route.params.id);
     this.$http
       .get(this.$apis.getgoodsinfo, { id: this.$route.params.id })
-      .then(res => {
-        console.log(res);
-        this.goods = res.list;
+      .then((res) => {
+        this.goods = res.list[0];
+        this.info.uid = this.$store.state.adminUser.uid;
+        this.info.goodsid = res.list[0].id;
       });
   },
-  methods: {},
+  methods: {
+    add() {
+      this.$http.post(this.$apis.cartadd, this.info).then((res) => {
+        if (res.code == 200) {
+          console.log(res);
+          alert("添加成功");
+
+        } else {
+          alert("添加失败");
+        }
+      });
+    },
+    onChange(index) {
+      this.showList = false;
+      this.chosenCoupon = index;
+    },
+    onExchange(code) {
+      this.coupons.push(coupon);
+    },
+  },
   computed: {},
-  watch: {}
+  watch: {},
 };
 </script>
 
@@ -128,37 +189,22 @@ export default {
 .mint-header {
   background-color: #f26b11;
 }
+.van-icon-arrow::before {
+  margin-top: 0.25rem;
+}
+.van-stepper {
+  margin: auto 0;
+}
 html,
 body {
   height: 100%;
   background: #f1f1f1;
 }
-.header {
-  display: flex;
-  justify-content: space-between;
-  background: #f26b11;
+.wrap {
+  padding-bottom: 1rem;
 }
-.header em {
-  font: 0.36rem "微软雅黑";
-  color: #ffffff;
-  padding-top: 0.1rem;
-}
-.header a {
-  padding-top: 0.2rem;
-  font: 0.3rem "微软雅黑";
-  color: #ffffff;
-}
-.header .menu {
-  display: flex;
-  justify-content: space-between;
-  width: 0.55rem;
-  padding-bottom: 0.36rem;
-}
-.header .menu span {
-  width: 0.12rem;
-  height: 0.11rem;
-  background: #ffffff;
-  border-radius: 50%;
+.van-goods-action {
+  padding-bottom: 1rem;
 }
 .main {
   background: #ffffff;
@@ -185,6 +231,10 @@ body {
   background: #ffffff;
   padding-bottom: 0.2rem;
   margin-bottom: 0.21rem;
+}
+.list ul li .font {
+  font: 0.26rem/0.98rem "微软雅黑";
+  color: #454545;
 }
 .list ul li {
   padding: 0 0.21rem 0 0.25rem;
@@ -296,53 +346,5 @@ body {
 }
 .comments ul li:nth-child(3) {
   border-bottom: none;
-}
-.footer {
-  max-width: 7.5rem;
-  background: #ffffff;
-  padding: 0;
-  bottom: 0;
-  top: 93%;
-  border-top: 1px solid #ebebeb;
-  display: flex;
-  position: fixed;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-.footer a {
-  margin-top: -0.1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.footer a:nth-child(1) {
-  width: 1.72rem;
-}
-.footer a:nth-child(1) img {
-  width: 0.51rem;
-  height: 0.52rem;
-}
-.footer a:nth-child(2) {
-  width: 2.89rem;
-  height: 1.11rem;
-  background: #f26b11;
-  font: 0.3rem/1.11rem "微软雅黑";
-  color: #ffffff;
-}
-.footer a:nth-child(3) {
-  width: 2.89rem;
-  height: 1.11rem;
-  background: #e43a3d;
-  font: 0.3rem/1.11rem "微软雅黑";
-  color: #ffffff;
-}
-.footer a i {
-  margin-top: 0.1rem;
-  color: #808080;
-}
-.footer .active i {
-  color: #f2661b;
 }
 </style>

@@ -22,7 +22,7 @@
         <van-button @click="del(item.id)" square text="删除" type="danger" class="delete-button" />
       </template>
     </van-swipe-cell>
-    <van-submit-bar  :price="this.sum" button-text="提交订单" @submit="onSubmit('/confirm')">
+    <van-submit-bar :price="this.sum" button-text="提交订单" @submit="onSubmit('/confirm')">
       <van-checkbox @click="all()" v-model="allchecked">全选</van-checkbox>
       <!-- <template #tip>
         你的收货地址不支持同城送,
@@ -33,10 +33,19 @@
 </template>
 
 <script>
-import { mapGetters ,mapActions} from "vuex";
+import store from "../../store";
+
+import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "",
+  beforeRouteEnter(to, from, next) {
+    let userinfo = store.state.adminUser;
+    if (userinfo.token) {
+      next();
+    } else {
+      next("/login");
+    }
+  },
   components: {},
   props: {},
   data() {
@@ -47,8 +56,10 @@ export default {
       info: [],
     };
   },
+
   mounted() {
     this.getcart();
+    console.log(this.$store.state.adminUser);
   },
   methods: {
     getcart() {
@@ -59,40 +70,25 @@ export default {
           this.info.map((item) => {
             item.status = item.status == 1 ? true : false;
           });
-          console.log(this.info);
         });
     },
     addedit(id) {
-      this.$http.post(this.$apis.cartedit, { id, type: 2 }).then((res) => {
-        console.log(res);
-      });
-      console.log(this.sum);
+      this.$http.post(this.$apis.cartedit, { id, type: 2 }).then((res) => {});
     },
     reduceedit(id) {
-      this.$http.post(this.$apis.cartedit, { id, type: 1 }).then((res) => {
-        console.log(res);
-        console.log(this.sum);
-      });
+      this.$http.post(this.$apis.cartedit, { id, type: 1 }).then((res) => {});
     },
     del(id) {
-      this.$http.post(this.$apis.cartdelete, { id }).then((res) => {
-        console.log(res);
-      });
+      this.$http.post(this.$apis.cartdelete, { id }).then((res) => {});
       this.getcart();
     },
     switchTab() {
       this.$router.push(i);
     },
-    onSubmit(i){
+    onSubmit(i) {
       this.$router.push(i);
-
     },
     all() {
-      console.log(
-        this.info.map((item) => {
-          item.status = this.allchecked;
-        })
-      );
       this.info.map((item) => {
         item.status = this.allchecked;
       });

@@ -113,18 +113,11 @@ export default {
           title: "代收款",
         },
       ],
-      userInfo: {},
     };
   },
-  mounted() {
-    this.userInfo = sessionStorage.getItem("userInfo")
-      ? JSON.parse(sessionStorage.getItem("userInfo"))
-      : {};
-    console.log(this.userInfo);
-  },
+  mounted() {},
   methods: {
     ...mapActions(["setAdminUserSync"]),
-
     quit() {
       this.setAdminUserSync({});
       this.$router.push("/login");

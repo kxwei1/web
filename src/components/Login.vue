@@ -66,7 +66,7 @@ export default {
     onSubmit() {
       this.$http.post(this.$apis.login, this.info).then((res) => {
         if (res.code == 200) {
-          this.setAdminUserSync(res.list)
+          this.setAdminUserSync(res.list);
           // this.info = {
           //   phone: "",
           //   password: "",
@@ -74,7 +74,7 @@ export default {
           // sessionStorage.setItem("userInfo", JSON.stringify(res.list));
           this.$router.push("/home");
         } else {
-          alert("注册失败");
+          alert("登陆失败");
         }
       });
     },
